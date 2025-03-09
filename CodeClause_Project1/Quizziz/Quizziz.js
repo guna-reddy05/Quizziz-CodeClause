@@ -1,152 +1,10 @@
-const allQuestions = [
-  {
-    question: "Q1. What is the capital of France?",
-    options: ["London", "Berlin", "Paris", "Madrid"],
-    answer: "Paris",
-  },
-  {
-    question: "Q2. Which planet is known as the Red Planet?",
-    options: ["Venus", "Mars", "Jupiter", "Saturn"],
-    answer: "Mars",
-  },
-  {
-    question: "Q3. What is 2 + 2?",
-    options: ["3", "4", "5", "6"],
-    answer: "4",
-  },
-  {
-    question: "Q4. Which element has the chemical symbol 'O'?",
-    options: ["Gold", "Oxygen", "Silver", "Iron"],
-    answer: "Oxygen",
-  },
-  {
-    question: "Q5. Who painted the Mona Lisa?",
-    options: ["Van Gogh", "Picasso", "Da Vinci", "Monet"],
-    answer: "Da Vinci",
-  },
-  {
-    question: "Q6. What is the largest ocean on Earth?",
-    options: ["Atlantic", "Indian", "Arctic", "Pacific"],
-    answer: "Pacific",
-  },
-  {
-    question: "Q7. Which country hosted the 2016 Summer Olympics?",
-    options: ["China", "Brazil", "USA", "Japan"],
-    answer: "Brazil",
-  },
-  {
-    question: "Q8. What gas do plants primarily use for photosynthesis?",
-    options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"],
-    answer: "Carbon Dioxide",
-  },
-  {
-    question: "Q9. Who wrote 'Romeo and Juliet'?",
-    options: ["Shakespeare", "Dickens", "Austen", "Hemingway"],
-    answer: "Shakespeare",
-  },
-  {
-    question: "Q10. What is the hardest natural substance known?",
-    options: ["Gold", "Iron", "Diamond", "Quartz"],
-    answer: "Diamond",
-  },
-  {
-    question: "Q11. What is the capital of Japan?",
-    options: ["Seoul", "Beijing", "Tokyo", "Bangkok"],
-    answer: "Tokyo",
-  },
-  {
-    question: "Q12. Which animal is known as the 'King of the Jungle'?",
-    options: ["Tiger", "Lion", "Elephant", "Bear"],
-    answer: "Lion",
-  },
-  {
-    question: "Q13. What is the smallest country in the world?",
-    options: ["Monaco", "Vatican City", "Nauru", "San Marino"],
-    answer: "Vatican City",
-  },
-  {
-    question: "Q14. Who discovered penicillin?",
-    options: [
-      "Alexander Fleming",
-      "Marie Curie",
-      "Isaac Newton",
-      "Albert Einstein",
-    ],
-    answer: "Alexander Fleming",
-  },
-  {
-    question: "Q15. What is the main ingredient in guacamole?",
-    options: ["Tomato", "Avocado", "Onion", "Pepper"],
-    answer: "Avocado",
-  },
-  {
-    question: "Q16. Which gas makes up most of Earth's atmosphere?",
-    options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Argon"],
-    answer: "Nitrogen",
-  },
-  {
-    question: "Q17. What is the currency of Brazil?",
-    options: ["Peso", "Real", "Dollar", "Euro"],
-    answer: "Real",
-  },
-  {
-    question: "Q18. Who wrote 'Pride and Prejudice'?",
-    options: [
-      "Jane Austen",
-      "Charlotte Brontë",
-      "Emily Dickinson",
-      "Mary Shelley",
-    ],
-    answer: "Jane Austen",
-  },
-  {
-    question: "Q19. What is the largest desert in the world?",
-    options: ["Sahara", "Gobi", "Antarctic", "Arabian"],
-    answer: "Antarctic",
-  },
-  {
-    question: "Q20. Which element has the chemical symbol 'Au'?",
-    options: ["Silver", "Gold", "Copper", "Iron"],
-    answer: "Gold",
-  },
-  {
-    question: "Q21. What is the capital of Australia?",
-    options: ["Sydney", "Melbourne", "Canberra", "Perth"],
-    answer: "Canberra",
-  },
-  {
-    question: "Q22. Which instrument has 88 keys?",
-    options: ["Piano", "Guitar", "Drums", "Violin"],
-    answer: "Piano",
-  },
-  {
-    question: "Q23. What is the tallest mountain in the world?",
-    options: ["K2", "Kangchenjunga", "Everest", "Makalu"],
-    answer: "Everest",
-  },
-  {
-    question: "Q24. Who painted the 'Starry Night'?",
-    options: [
-      "Claude Monet",
-      "Vincent van Gogh",
-      "Pablo Picasso",
-      "Leonardo da Vinci",
-    ],
-    answer: "Vincent van Gogh",
-  },
-  {
-    question: "Q25. What is the primary source of energy for Earth?",
-    options: ["Wind", "Sun", "Water", "Geothermal"],
-    answer: "Sun",
-  },
-];
-
 let selectedQuestions = [];
 let currentQuestionIndex = 0;
 let score = 0;
 let timeLeft = 45;
 let timer;
 let userAnswers = [];
+let userName = "";
 
 const startContainer = document.getElementById("start-container");
 const quizContainer = document.getElementById("quiz-container");
@@ -158,17 +16,44 @@ const timerProgress = document.getElementById("timer-progress");
 const timerElement = document.getElementById("timer");
 const finalScore = document.getElementById("final-score");
 const resultsList = document.getElementById("results-list");
+const nameInput = document.getElementById("name-input");
 
 document.getElementById("start-btn").addEventListener("click", startQuiz);
 submitBtn.addEventListener("click", checkAnswer);
 
 function startQuiz() {
+  userName = nameInput.value.trim();
+  if (!userName) {
+    alert("Please enter your name!");
+    return;
+  }
   startContainer.style.display = "none";
   quizContainer.style.display = "block";
   userAnswers = [];
-  selectedQuestions = shuffleArray([...allQuestions]).slice(0, 10);
-  currentQuestionIndex = 0;
-  loadQuestion();
+  fetchQuestions();
+}
+
+function fetchQuestions() {
+  fetch("http://localhost:3000/questions")
+    .then((response) => {
+      if (!response.ok) throw new Error("Network response was not ok");
+      return response.json();
+    })
+    .then((data) => {
+      if (data.length === 0) {
+        alert("No questions available in the database!");
+        returnToStart();
+        return;
+      }
+      selectedQuestions = shuffleArray(data).slice(0, 10);
+      currentQuestionIndex = 0;
+      loadQuestion();
+    })
+    .catch((error) => {
+      console.error("Error fetching questions:", error);
+      alert("Failed to load questions. Please check the server.");
+      returnToStart();
+    });
 }
 
 function loadQuestion() {
@@ -179,11 +64,7 @@ function loadQuestion() {
   questionContainer.classList.add("fade-in");
 
   const q = selectedQuestions[currentQuestionIndex];
-  const renumberedQuestion = q.question.replace(
-    /Q\d+\.\s*/,
-    `Q${currentQuestionIndex + 1}. `
-  );
-  questionContainer.textContent = renumberedQuestion;
+  questionContainer.textContent = `Q${currentQuestionIndex + 1}. ${q.question}`;
   optionsContainer.innerHTML = "";
 
   const shuffledOptions = shuffleArray([...q.options]);
@@ -298,6 +179,7 @@ function showResults() {
   document
     .getElementById("return-btn")
     .addEventListener("click", returnToStart);
+  saveScore();
 }
 
 function calculateScore() {
@@ -329,6 +211,23 @@ function displayResults() {
 function returnToStart() {
   resultContainer.style.display = "none";
   startContainer.style.display = "block";
+  nameInput.value = "";
+}
+
+function saveScore() {
+  const data = {
+    name: userName,
+    timestamp: new Date().toISOString(),
+    score: score,
+  };
+  fetch("http://localhost:3000/save-score", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  })
+    .then((response) => response.json())
+    .then((result) => console.log("Score saved:", result))
+    .catch((error) => console.error("Error saving score:", error));
 }
 
 function shuffleArray(array) {

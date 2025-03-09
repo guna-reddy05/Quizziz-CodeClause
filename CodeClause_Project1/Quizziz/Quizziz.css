@@ -59,6 +59,16 @@ h1 {
   margin-bottom: 25px;
 }
 
+#name-input {
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 2px solid #e9ecef;
+  border-radius: 25px;
+  font-size: 16px;
+  width: 80%;
+  max-width: 300px;
+}
+
 button {
   background: #3498db;
   color: white;
