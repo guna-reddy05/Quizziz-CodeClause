@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quizziz</title>
+    <link rel="stylesheet" href="./public/Quizziz.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="start-container" class="start-container">
+      <div class="start-content">
+        <h1>Quizziz</h1>
+        <p>Ready to test your knowledge?</p>
+        <input
+          type="text"
+          id="name-input"
+          placeholder="Enter your name"
+          maxlength="20"
+        />
+        <button id="start-btn">Start Quiz</button>
+        <button id="check-all-results-start-btn">Check All Results</button>
+        <div class="leaderboard">
+          <h2>Leaderboard</h2>
+          <div id="top-scores-list"></div>
+        </div>
+      </div>
+      <div id="results-container" style="display: none"></div>
+    </div>
+
+    <div id="quiz-container" class="quiz-container" style="display: none">
+      <div class="header">
+        <div id="timer" class="timer">
+          <div id="timer-progress" class="timer-progress"></div>
+        </div>
+        <div>
+          <h2 id="question-container" class="question"></h2>
+          <div class="divider"></div>
+          <div id="options-container" class="options"></div>
+          <button id="submit-btn">Submit</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="Quizziz.js"></script>
+  </body>
+</html>
